@@ -1,0 +1,1 @@
+exports.COOKIE_NAME = 'user_session'

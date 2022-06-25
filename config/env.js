@@ -1,0 +1,4 @@
+exports.PORT = 5000;
+exports.QUERY_STRING = 'mongodb://127.0.0.1:27017/crypto'
+exports.SALT_ROUNDS = 10
+exports.SECRET = 'eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY1NTk3MTMyOSwiaWF0IjoxNjU1OTcxMzI5fQ.S6Q4i0GeWkLkUbvljvzPsuyIJh2zxNhDBW9Oltl8r40'
