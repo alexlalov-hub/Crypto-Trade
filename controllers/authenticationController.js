@@ -16,6 +16,14 @@ router.get('/register', isNotAuthorized, (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
 
+    if (!email) {
+        return res.render('authentication/login', { error: 'Email is required' })
+    }
+
+    if (!password) {
+        return res.render('authentication/login', { error: 'Password is required' })
+    }
+
     try {
         const user = await authenticationService.login(email, password)
         const token = await authenticationService.createToken(user)

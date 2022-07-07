@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const cryptoService = require('../services/cryptoService')
 const { isAuthorized } = require('../middlewares/authenticationMiddleware')
 const { preLoadCrypto, isCryptoOwner, isNotCryptoOwner } = require('../middlewares/cryptoMiddleware')
+const { getErrorMessage } = require('../utilities/errorMapper')
 
 router.get('/catalog', async (req, res) => {
     const cryptos = await cryptoService.findAll()
@@ -15,16 +16,20 @@ router.get('/create', isAuthorized, (req, res) => {
     res.render('crypto/create')
 })
 
-router.post('/create', (req, res) => {
-    cryptoService.create({ ...req.body, owner: req.user._id })
+router.post('/create', async (req, res) => {
+    try {
+        await cryptoService.create({ ...req.body, owner: req.user._id })
 
-    res.redirect('/')
+        res.redirect('/catalog')
+    } catch (error) {
+        return res.render('crypto/create', { error: getErrorMessage(error) })
+    }
 })
 
 router.get('/details/:cryptoId', async (req, res) => {
     const crypto = await cryptoService.findById(req.params.cryptoId)
     const isOwner = crypto.owner._id == req.user?._id
-    const hasBought = crypto.buyACrypto.map(x => x.toString()).includes(req.user._id)
+    const hasBought = crypto.buyACrypto.map(x => x.toString()).includes(req.user?._id)
 
     res.render('crypto/details', { ...crypto, isOwner, hasBought })
 })
@@ -42,9 +47,15 @@ router.get('/edit/:cryptoId', isAuthorized, preLoadCrypto, isCryptoOwner, async 
 })
 
 router.post('/edit/:cryptoId', async (req, res) => {
-    await cryptoService.updateOne(req.params.cryptoId, req.body)
+    try {
+        await cryptoService.updateOne(req.params.cryptoId, req.body)
 
-    res.redirect(`/details/${req.params.cryptoId}`)
+        res.redirect(`/details/${req.params.cryptoId}`)
+    } catch (error) {
+        return res.render('crypto/edit', { error: getErrorMessage(error) })
+
+    }
+
 })
 
 router.get('/buy/:cryptoId', isAuthorized, preLoadCrypto, isNotCryptoOwner, async (req, res) => {
